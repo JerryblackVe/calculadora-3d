@@ -1,58 +1,80 @@
 import { useState, useEffect } from 'react'
 import { calcularCosto } from '../lib/calculos'
 
+const DEFAULT_CONFIG = {
+  precioFilamentoKg: 18000,
+  factorInflacion: 1.0,
+  precioKwh: 115,
+  potenciaW: 200,
+  precioImpresora: 1200000,
+  vidaUtilHoras: 5000,
+  horasDia: 16,
+  diasMes: 30,
+  alquiler: 600000,
+  proporcionNegocio: 0.33,
+  ads: 200000,
+  monotributo: 180000,
+  gasolina: 80000,
+  mantPorHora: 90,
+  valorHoraTrabajo: 8000
+}
+
+const DEFAULT_PRODUCTOS = [
+  { id: 1, nombre: 'Figura decorativa', materialG: 50, horas: 2, minTrabajo: 15, packaging: 200, tasaFallos: 0.05, ganancia: 0.3 },
+  { id: 2, nombre: 'Soporte teléfono', materialG: 30, horas: 1.5, minTrabajo: 10, packaging: 150, tasaFallos: 0.03, ganancia: 0.3 },
+  { id: 3, nombre: 'Tornillo personalizado', materialG: 10, horas: 0.5, minTrabajo: 5, packaging: 100, tasaFallos: 0.02, ganancia: 0.3 },
+  { id: 4, nombre: 'Engranaje', materialG: 25, horas: 1, minTrabajo: 10, packaging: 150, tasaFallos: 0.03, ganancia: 0.3 },
+  { id: 5, nombre: 'Copa', materialG: 80, horas: 3, minTrabajo: 20, packaging: 250, tasaFallos: 0.08, ganancia: 0.3 },
+  { id: 6, nombre: 'Maceta', materialG: 150, horas: 4, minTrabajo: 25, packaging: 300, tasaFallos: 0.1, ganancia: 0.3 },
+  { id: 7, nombre: 'Llavero', materialG: 8, horas: 0.5, minTrabajo: 5, packaging: 80, tasaFallos: 0.02, ganancia: 0.3 },
+  { id: 8, nombre: 'Caja organizadora', materialG: 100, horas: 3.5, minTrabajo: 20, packaging: 250, tasaFallos: 0.07, ganancia: 0.3 },
+  { id: 9, nombre: 'Pelota', materialG: 60, horas: 2.5, minTrabajo: 15, packaging: 200, tasaFallos: 0.06, ganancia: 0.3 },
+  { id: 10, nombre: 'Jarrón', materialG: 200, horas: 5, minTrabajo: 30, packaging: 350, tasaFallos: 0.12, ganancia: 0.3 }
+]
+
 export default function Home() {
   const [dolar, setDolar] = useState(null)
   const [inflacion, setInflacion] = useState(null)
   const [loading, setLoading] = useState(false)
   const [lastUpdate, setLastUpdate] = useState(null)
   const [darkMode, setDarkMode] = useState(false)
+  const [config, setConfig] = useState(DEFAULT_CONFIG)
+  const [productos, setProductos] = useState(DEFAULT_PRODUCTOS)
 
   useEffect(() => {
-    const saved = localStorage.getItem('darkMode')
-    if (saved !== null) setDarkMode(saved === 'true')
+    const savedDarkMode = localStorage.getItem('calc3d_darkMode')
+    if (savedDarkMode !== null) setDarkMode(savedDarkMode === 'true')
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('darkMode', darkMode)
+    localStorage.setItem('calc3d_darkMode', darkMode)
   }, [darkMode])
 
-  const [config, setConfig] = useState({
-    // Materiales
-    precioFilamentoKg: 18000,
-    factorInflacion: 1.0,
-    // Energía
-    precioKwh: 115,
-    potenciaW: 200,
-    // Equipo
-    precioImpresora: 1200000,
-    vidaUtilHoras: 5000,
-    // Operaciones
-    horasDia: 16,
-    diasMes: 30,
-    // Costos fijos
-    alquiler: 600000,
-    proporcionNegocio: 0.33,
-    ads: 200000,
-    monotributo: 180000,
-    gasolina: 80000,
-    // Mano de obra
-    mantPorHora: 90,
-    valorHoraTrabajo: 8000
-  })
+  useEffect(() => {
+    const savedConfig = localStorage.getItem('calc3d_config')
+    if (savedConfig) {
+      try {
+        setConfig({ ...DEFAULT_CONFIG, ...JSON.parse(savedConfig) })
+      } catch (e) {}
+    }
+  }, [])
 
-  const [productos, setProductos] = useState([
-    { id: 1, nombre: 'Figura decorativa', materialG: 50, horas: 2, minTrabajo: 15, packaging: 200, tasaFallos: 0.05, ganancia: 0.3 },
-    { id: 2, nombre: 'Soporte teléfono', materialG: 30, horas: 1.5, minTrabajo: 10, packaging: 150, tasaFallos: 0.03, ganancia: 0.3 },
-    { id: 3, nombre: 'Tornillo personalizado', materialG: 10, horas: 0.5, minTrabajo: 5, packaging: 100, tasaFallos: 0.02, ganancia: 0.3 },
-    { id: 4, nombre: 'Engranaje', materialG: 25, horas: 1, minTrabajo: 10, packaging: 150, tasaFallos: 0.03, ganancia: 0.3 },
-    { id: 5, nombre: 'Copa', materialG: 80, horas: 3, minTrabajo: 20, packaging: 250, tasaFallos: 0.08, ganancia: 0.3 },
-    { id: 6, nombre: 'Maceta', materialG: 150, horas: 4, minTrabajo: 25, packaging: 300, tasaFallos: 0.1, ganancia: 0.3 },
-    { id: 7, nombre: 'Llavero', materialG: 8, horas: 0.5, minTrabajo: 5, packaging: 80, tasaFallos: 0.02, ganancia: 0.3 },
-    { id: 8, nombre: 'Caja organizadora', materialG: 100, horas: 3.5, minTrabajo: 20, packaging: 250, tasaFallos: 0.07, ganancia: 0.3 },
-    { id: 9, nombre: 'Pelota', materialG: 60, horas: 2.5, minTrabajo: 15, packaging: 200, tasaFallos: 0.06, ganancia: 0.3 },
-    { id: 10, nombre: 'Jarrón', materialG: 200, horas: 5, minTrabajo: 30, packaging: 350, tasaFallos: 0.12, ganancia: 0.3 }
-  ])
+  useEffect(() => {
+    localStorage.setItem('calc3d_config', JSON.stringify(config))
+  }, [config])
+
+  useEffect(() => {
+    const savedProductos = localStorage.getItem('calc3d_productos')
+    if (savedProductos) {
+      try {
+        setProductos(JSON.parse(savedProductos))
+      } catch (e) {}
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('calc3d_productos', JSON.stringify(productos))
+  }, [productos])
 
   const actualizarDatos = async () => {
     setLoading(true)
@@ -105,9 +127,11 @@ export default function Home() {
   }
 
   const resetProductos = () => {
-    setProductos([
-      { id: 1, nombre: 'Nuevo producto', materialG: 50, horas: 2, minTrabajo: 15, packaging: 200, tasaFallos: 0.05, ganancia: 0.3 }
-    ])
+    setProductos(DEFAULT_PRODUCTOS)
+  }
+
+  const resetConfig = () => {
+    setConfig(DEFAULT_CONFIG)
   }
 
   const handleInputChange = (index, field, value) => {
@@ -192,7 +216,10 @@ export default function Home() {
       </div>
 
       <section style={{...styles.configSection, ...theme.configSection}}>
-        <h2 style={{...styles.sectionTitle, ...theme.sectionTitle}}>⚙️ Configuración Global</h2>
+        <div style={styles.configHeader}>
+          <h2 style={{...styles.sectionTitle, ...theme.sectionTitle}}>⚙️ Configuración Global</h2>
+          <button onClick={resetConfig} style={{...styles.resetConfigBtn, ...theme.resetConfigBtn}}>🔄 Reset</button>
+        </div>
         
         <div style={styles.configGrid}>
           {/* 📦 MATERIALES */}
@@ -426,7 +453,8 @@ const light = {
   footerRow: { backgroundColor: '#f1f5f9' },
   tdFooter: { color: '#1a365d', fontWeight: '700', fontSize: '12px' },
   deleteButton: { color: '#dc2626', fontWeight: '700' },
-  footer: { color: '#64748b', backgroundColor: '#f5f7fa' }
+  footer: { color: '#64748b', backgroundColor: '#f5f7fa' },
+  resetConfigBtn: { backgroundColor: '#dc2626', color: '#ffffff' }
 }
 
 const dark = {
@@ -469,7 +497,8 @@ const dark = {
   footerRow: { backgroundColor: '#0f172a' },
   tdFooter: { color: '#e2e8f0', fontWeight: '700', fontSize: '12px' },
   deleteButton: { color: '#f87171', fontWeight: '700' },
-  footer: { color: '#94a3b8', backgroundColor: '#0f172a' }
+  footer: { color: '#94a3b8', backgroundColor: '#0f172a' },
+  resetConfigBtn: { backgroundColor: '#dc2626', color: '#ffffff' }
 }
 
 const styles = {
@@ -583,8 +612,22 @@ const styles = {
     borderRadius: '12px',
     boxShadow: '0 2px 15px rgba(0,0,0,0.08)'
   },
+  configHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '15px'
+  },
+  resetConfigBtn: {
+    padding: '6px 12px',
+    borderRadius: '6px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '12px',
+    fontWeight: '600'
+  },
   sectionTitle: {
-    marginBottom: '15px',
+    marginBottom: '0',
     fontSize: '18px',
     fontWeight: '600'
   },
