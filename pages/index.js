@@ -36,7 +36,7 @@ const DEFAULT_PRODUCTOS = [
 ]
 
 export default function Home() {
-  console.log('>>> COMPONENT: Home rendered, Supabase Key available:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  console.log('>>> COMPONENT: Home rendered')
   const [dolar, setDolar] = useState(null)
   const [inflacion, setInflacion] = useState(null)
   const [loading, setLoading] = useState(false)
