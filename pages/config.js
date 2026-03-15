@@ -23,6 +23,7 @@ const DEFAULT_CONFIG = {
 export default function Config() {
   const [darkMode, setDarkMode] = useState(false)
   const [config, setConfig] = useState(DEFAULT_CONFIG)
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('calc3d_darkMode')
@@ -53,6 +54,12 @@ export default function Config() {
   const totalFijos = config.ads + config.monotributo + config.gasolina + alquilerNegocio
   const overheadPorHora = totalFijos / horasImpresionMes
 
+  const guardarCambios = async () => {
+    await saveConfig(config)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
   const resetConfig = () => {
     setConfig(DEFAULT_CONFIG)
     saveConfig(DEFAULT_CONFIG)
@@ -65,9 +72,14 @@ export default function Config() {
       <header style={{...styles.header, ...theme.header}}>
         <div style={styles.headerTop}>
           <Link href="/" style={styles.backButton}>← Volver</Link>
-          <button onClick={() => setDarkMode(!darkMode)} style={{...styles.themeToggle, ...theme.themeToggle}}>
-            {darkMode ? '☀️ Claro' : '🌙 Oscuro'}
-          </button>
+          <div style={{display: 'flex', gap: '10px'}}>
+            <button onClick={guardarCambios} style={{...styles.saveButton, ...theme.saveButton}}>
+              {saved ? '✅ Guardado' : '💾 Guardar'}
+            </button>
+            <button onClick={() => setDarkMode(!darkMode)} style={{...styles.themeToggle, ...theme.themeToggle}}>
+              {darkMode ? '☀️ Claro' : '🌙 Oscuro'}
+            </button>
+          </div>
         </div>
         <h1 style={{...styles.title, ...theme.title}}>⚙️ Configuración</h1>
         <p style={{...styles.subtitle, ...theme.subtitle}}>Ajusta los parámetros de tu negocio</p>
@@ -271,6 +283,7 @@ const light = {
   title: { color: '#ffffff' },
   subtitle: { color: 'rgba(255, 255, 255, 0.85)' },
   themeToggle: { backgroundColor: '#ffffff', color: '#1a365d', border: '2px solid #2d8b8b' },
+  saveButton: { backgroundColor: '#22c55e', color: '#ffffff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: '600' },
   backButton: { color: '#ffffff', textDecoration: 'none', fontSize: '14px', fontWeight: '600' },
   configSection: { backgroundColor: '#ffffff' },
   sectionTitle: { color: '#1a365d', fontWeight: '700' },
@@ -292,6 +305,7 @@ const dark = {
   title: { color: '#ffffff' },
   subtitle: { color: '#ffffff' },
   themeToggle: { background: '#ffffff', color: '#0f172a', border: '2px solid #2d8b8b' },
+  saveButton: { backgroundColor: '#22c55e', color: '#ffffff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: '600' },
   backButton: { color: '#ffffff', textDecoration: 'none', fontSize: '14px', fontWeight: '600' },
   configSection: { backgroundColor: '#1e293b' },
   sectionTitle: { color: '#ffffff', fontWeight: '700' },

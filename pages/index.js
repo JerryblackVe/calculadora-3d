@@ -42,6 +42,7 @@ export default function Home() {
   const [darkMode, setDarkMode] = useState(false)
   const [config, setConfig] = useState(DEFAULT_CONFIG)
   const [productos, setProductos] = useState(DEFAULT_PRODUCTOS)
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('calc3d_darkMode')
@@ -130,6 +131,13 @@ export default function Home() {
     saveProductos(DEFAULT_PRODUCTOS)
   }
 
+  const guardarCambios = async () => {
+    await saveConfig(config)
+    await saveProductos(productos)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
   const resetConfig = () => {
     setConfig(DEFAULT_CONFIG)
     saveConfig(DEFAULT_CONFIG)
@@ -170,6 +178,9 @@ export default function Home() {
         </div>
         <div style={styles.headerRight}>
           <Link href="/config" style={{...styles.configLink, ...theme.configLink}}>⚙️ Configuración</Link>
+          <button onClick={guardarCambios} style={{...styles.saveButton, ...theme.saveButton}}>
+            {saved ? '✅ Guardado' : '💾 Guardar'}
+          </button>
           <button onClick={() => setDarkMode(!darkMode)} style={{...styles.themeToggle, ...theme.themeToggle}}>
             {darkMode ? '☀️ Claro' : '🌙 Oscuro'}
           </button>
@@ -284,6 +295,7 @@ const light = {
   subtitle: { color: 'rgba(255, 255, 255, 0.85)' },
   configLink: { color: '#ffffff', textDecoration: 'none', padding: '8px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', fontWeight: '600' },
   themeToggle: { backgroundColor: '#ffffff', color: '#1a365d', border: '2px solid #2d8b8b' },
+  saveButton: { backgroundColor: '#22c55e', color: '#ffffff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: '600' },
   statCard: { background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)' },
   statCardHighlight: { background: 'rgba(45, 139, 139, 0.4)', border: '1px solid #2d8b8b' },
   statLabel: { color: 'rgba(255, 255, 255, 0.9)' },
@@ -329,6 +341,7 @@ const dark = {
   subtitle: { color: '#ffffff' },
   configLink: { color: '#ffffff', textDecoration: 'none', padding: '8px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', fontWeight: '600' },
   themeToggle: { background: '#ffffff', color: '#0f172a', border: '2px solid #2d8b8b' },
+  saveButton: { backgroundColor: '#22c55e', color: '#ffffff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: '600' },
   statCard: { background: 'rgba(45, 139, 139, 0.3)', border: '1px solid #2d8b8b' },
   statCardHighlight: { background: 'rgba(34, 197, 94, 0.3)', border: '1px solid #22c55e' },
   statLabel: { color: '#ffffff' },
