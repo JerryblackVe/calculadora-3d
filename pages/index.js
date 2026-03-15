@@ -126,9 +126,23 @@ export default function Home() {
     return resultado
   }
 
-  const resetProductos = () => {
-    setProductos(DEFAULT_PRODUCTOS)
-    saveProductos(DEFAULT_PRODUCTOS)
+  const emptyProducts = [
+    { id: 1, nombre: '', materialG: 0, horas: 0, minTrabajo: 0, packaging: 0, tasaFallos: 0, ganancia: 0 },
+    { id: 2, nombre: '', materialG: 0, horas: 0, minTrabajo: 0, packaging: 0, tasaFallos: 0, ganancia: 0 },
+    { id: 3, nombre: '', materialG: 0, horas: 0, minTrabajo: 0, packaging: 0, tasaFallos: 0, ganancia: 0 },
+    { id: 4, nombre: '', materialG: 0, horas: 0, minTrabajo: 0, packaging: 0, tasaFallos: 0, ganancia: 0 },
+    { id: 5, nombre: '', materialG: 0, horas: 0, minTrabajo: 0, packaging: 0, tasaFallos: 0, ganancia: 0 },
+    { id: 6, nombre: '', materialG: 0, horas: 0, minTrabajo: 0, packaging: 0, tasaFallos: 0, ganancia: 0 },
+    { id: 7, nombre: '', materialG: 0, horas: 0, minTrabajo: 0, packaging: 0, tasaFallos: 0, ganancia: 0 },
+    { id: 8, nombre: '', materialG: 0, horas: 0, minTrabajo: 0, packaging: 0, tasaFallos: 0, ganancia: 0 },
+    { id: 9, nombre: '', materialG: 0, horas: 0, minTrabajo: 0, packaging: 0, tasaFallos: 0, ganancia: 0 },
+    { id: 10, nombre: '', materialG: 0, horas: 0, minTrabajo: 0, packaging: 0, tasaFallos: 0, ganancia: 0 }
+  ]
+
+  const resetProductos = async () => {
+    if (!confirm('¿Borrar todos los productos?')) return
+    await saveProductos(emptyProducts)
+    setProductos(emptyProducts)
   }
 
   const guardarCambios = async () => {
