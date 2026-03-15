@@ -169,16 +169,6 @@ export default function Home() {
           <button onClick={() => setDarkMode(!darkMode)} style={{...styles.themeToggle, ...theme.themeToggle}}>
             {darkMode ? '☀️ Claro' : '🌙 Oscuro'}
           </button>
-          <div style={styles.headerStats}>
-            <div style={{...styles.statCard, ...theme.statCard}}>
-              <span style={{...styles.statLabel, ...theme.statLabel}}>Costo Total</span>
-              <span style={{...styles.statValue, ...theme.statValue}}>${Math.round(costoTotalGeneral).toLocaleString()}</span>
-            </div>
-            <div style={{...styles.statCard, ...styles.statCardHighlight, ...theme.statCardHighlight}}>
-              <span style={{...styles.statLabel, ...theme.statLabel}}>Ingreso Potential</span>
-              <span style={{...styles.statValueGreen, ...theme.statValueGreen}}>${Math.round(precioTotalGeneral).toLocaleString()}</span>
-            </div>
-          </div>
         </div>
       </header>
 
