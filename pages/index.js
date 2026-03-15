@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { calcularCosto } from '../lib/calculos'
 import { loadConfig, saveConfig, loadProductos, saveProductos, saveExchangeRate } from '../lib/supabase'
 
+// Fantastic Plastik - Calculadora de Costos 3D
 const DEFAULT_CONFIG = {
   precioFilamentoKg: 18000,
   factorInflacion: 1.0,
