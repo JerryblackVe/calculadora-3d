@@ -484,7 +484,7 @@ const dark = {
   sectionTitle: { color: '#ffffff', fontWeight: '700' },
   addButton: { backgroundColor: '#2d8b8b' },
   resetButton: { backgroundColor: '#dc2626' },
-  headerRow: { backgroundColor: '#0f172a' },
+  headerRow: { backgroundColor: '#1a365d' },
   th: { color: '#ffffff', fontWeight: '700', fontSize: '10px' },
   row: { borderBottom: '1px solid #334155' },
   td: { color: '#ffffff', fontSize: '12px' },
