@@ -345,16 +345,16 @@ export default function Home() {
           <table style={styles.table}>
             <thead>
               <tr style={{...styles.headerRow, ...theme.headerRow}}>
-                <th style={{...styles.th, width: '160px'}}>Producto</th>
-                <th style={{...styles.th, width: '70px'}}>Material(g)</th>
-                <th style={{...styles.th, width: '60px'}}>Horas</th>
-                <th style={{...styles.th, width: '60px'}}>Min Trab</th>
-                <th style={{...styles.th, width: '70px'}}>Packaging</th>
-                <th style={{...styles.th, width: '70px'}}>Tasa Fallos</th>
-                <th style={{...styles.th, width: '70px'}}>% Ganancia</th>
-                <th style={{...styles.th, width: '90px'}}>COSTO</th>
-                <th style={{...styles.th, width: '100px'}}>PRECIO FINAL</th>
-                <th style={{...styles.th, width: '40px'}}></th>
+                <th style={{...styles.th, ...theme.th, width: '160px'}}>Producto</th>
+                <th style={{...styles.th, ...theme.th, width: '70px'}}>Material(g)</th>
+                <th style={{...styles.th, ...theme.th, width: '60px'}}>Horas</th>
+                <th style={{...styles.th, ...theme.th, width: '60px'}}>Min Trab</th>
+                <th style={{...styles.th, ...theme.th, width: '70px'}}>Packaging</th>
+                <th style={{...styles.th, ...theme.th, width: '70px'}}>Tasa Fallos</th>
+                <th style={{...styles.th, ...theme.th, width: '70px'}}>% Ganancia</th>
+                <th style={{...styles.th, ...theme.th, width: '90px'}}>COSTO</th>
+                <th style={{...styles.th, ...theme.th, width: '100px'}}>PRECIO FINAL</th>
+                <th style={{...styles.th, ...theme.th, width: '40px'}}></th>
               </tr>
             </thead>
             <tbody>
