@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { calcularCosto } from '../lib/calculos'
 import { loadConfig, saveConfig, loadProductos, saveProductos, saveExchangeRate } from '../lib/supabase'
 
@@ -166,6 +167,7 @@ export default function Home() {
           <p style={{...styles.subtitle, ...theme.subtitle}}>Impresión 3D - Fantastic Plastik</p>
         </div>
         <div style={styles.headerRight}>
+          <Link href="/config" style={{...styles.configLink, ...theme.configLink}}>⚙️ Configuración</Link>
           <button onClick={() => setDarkMode(!darkMode)} style={{...styles.themeToggle, ...theme.themeToggle}}>
             {darkMode ? '☀️ Claro' : '🌙 Oscuro'}
           </button>
@@ -202,126 +204,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      <section style={{...styles.configSection, ...theme.configSection}}>
-        <div style={styles.configHeader}>
-          <h2 style={{...styles.sectionTitle, ...theme.sectionTitle}}>⚙️ Configuración Global</h2>
-          <button onClick={resetConfig} style={{...styles.resetConfigBtn, ...theme.resetConfigBtn}}>🔄 Reset</button>
-        </div>
-        
-        <div style={styles.configGrid}>
-          {/* 📦 MATERIALES */}
-          <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>📦 Materiales</h3>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Precio filamento/kg ($)</label>
-              <input type="number" value={config.precioFilamentoKg} onChange={e => setConfig({...config, precioFilamentoKg: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-          </div>
-
-          {/* ⚡ ENERGÍA */}
-          <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>⚡ Energía</h3>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Precio kWh ($)</label>
-              <input type="number" value={config.precioKwh} onChange={e => setConfig({...config, precioKwh: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Potencia impr. (W)</label>
-              <input type="number" value={config.potenciaW} onChange={e => setConfig({...config, potenciaW: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-          </div>
-
-          {/* 🖨️ EQUIPO */}
-          <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>🖨️ Equipo</h3>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Precio impresora ($)</label>
-              <input type="number" value={config.precioImpresora} onChange={e => setConfig({...config, precioImpresora: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Vida útil (horas)</label>
-              <input type="number" value={config.vidaUtilHoras} onChange={e => setConfig({...config, vidaUtilHoras: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-          </div>
-
-          {/* 🏭 OPERACIONES */}
-          <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>🏭 Operaciones</h3>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Horas/día</label>
-              <input type="number" value={config.horasDia} onChange={e => setConfig({...config, horasDia: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Días/mes</label>
-              <input type="number" value={config.diasMes} onChange={e => setConfig({...config, diasMes: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-          </div>
-
-          {/* 💰 COSTOS FIJOS */}
-          <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>💰 Costos Fijos</h3>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Alquiler ($)</label>
-              <input type="number" value={config.alquiler} onChange={e => setConfig({...config, alquiler: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>% Negocio</label>
-              <input type="number" value={Math.round(config.proporcionNegocio * 100)} onChange={e => setConfig({...config, proporcionNegocio: parseFloat(e.target.value) / 100})} style={{...styles.input, ...theme.input}} />
-            </div>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Ads ($)</label>
-              <input type="number" value={config.ads} onChange={e => setConfig({...config, ads: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Monotributo ($)</label>
-              <input type="number" value={config.monotributo} onChange={e => setConfig({...config, monotributo: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Gasolina ($)</label>
-              <input type="number" value={config.gasolina} onChange={e => setConfig({...config, gasolina: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-          </div>
-
-          {/* 👷 MANO DE OBRA */}
-          <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>👷 Mano de Obra</h3>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Mant. por hora ($)</label>
-              <input type="number" value={config.mantPorHora} onChange={e => setConfig({...config, mantPorHora: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-            <div style={styles.configRow}>
-              <label style={{...styles.label, ...theme.label}}>Valor hora ($)</label>
-              <input type="number" value={config.valorHoraTrabajo} onChange={e => setConfig({...config, valorHoraTrabajo: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
-          </div>
-
-          {/* 📊 RESUMEN CALCULADO */}
-          <div style={{...styles.configCard, ...styles.summaryCard, ...theme.summaryCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>📊 Resumen</h3>
-            <div style={styles.summaryRow}>
-              <span style={{...styles.summaryLabel, ...theme.summaryLabel}}>Horas/mes:</span>
-              <span style={{...styles.summaryValue, ...theme.summaryValue}}>{horasImpresionMes.toLocaleString()}</span>
-            </div>
-            <div style={styles.summaryRow}>
-              <span style={{...styles.summaryLabel, ...theme.summaryLabel}}>Desgaste ($/h):</span>
-              <span style={{...styles.summaryValue, ...theme.summaryValue}}>${Math.round(costoDesgaste).toLocaleString()}</span>
-            </div>
-            <div style={styles.summaryRow}>
-              <span style={{...styles.summaryLabel, ...theme.summaryLabel}}>Alquiler negocio:</span>
-              <span style={{...styles.summaryValue, ...theme.summaryValue}}>${Math.round(alquilerNegocio).toLocaleString()}</span>
-            </div>
-            <div style={styles.summaryRow}>
-              <span style={{...styles.summaryLabel, ...theme.summaryLabel}}>Total fijos/mes:</span>
-              <span style={{...styles.summaryValue, ...theme.summaryValue}}>${Math.round(totalFijos).toLocaleString()}</span>
-            </div>
-            <div style={{...styles.summaryRow, ...styles.summaryRowHighlight}}>
-              <span style={{...styles.summaryLabel, ...theme.summaryLabel}}>Overhead ($/h):</span>
-              <span style={{...styles.summaryValueHighlight, ...theme.summaryValueHighlight}}>${Math.round(overheadPorHora).toLocaleString()}</span>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <section style={{...styles.tableSection, ...theme.tableSection}}>
         <div style={styles.tableHeader}>
@@ -398,6 +280,7 @@ const light = {
   header: { background: 'linear-gradient(135deg, #1a365d 0%, #2d4a6f 100%)' },
   title: { color: '#ffffff' },
   subtitle: { color: 'rgba(255, 255, 255, 0.85)' },
+  configLink: { color: '#ffffff', textDecoration: 'none', padding: '8px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', fontWeight: '600' },
   themeToggle: { backgroundColor: '#ffffff', color: '#1a365d', border: '2px solid #2d8b8b' },
   statCard: { background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)' },
   statCardHighlight: { background: 'rgba(45, 139, 139, 0.4)', border: '1px solid #2d8b8b' },
@@ -442,6 +325,7 @@ const dark = {
   header: { background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' },
   title: { color: '#ffffff' },
   subtitle: { color: '#ffffff' },
+  configLink: { color: '#ffffff', textDecoration: 'none', padding: '8px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', fontWeight: '600' },
   themeToggle: { background: '#ffffff', color: '#0f172a', border: '2px solid #2d8b8b' },
   statCard: { background: 'rgba(45, 139, 139, 0.3)', border: '1px solid #2d8b8b' },
   statCardHighlight: { background: 'rgba(34, 197, 94, 0.3)', border: '1px solid #22c55e' },
