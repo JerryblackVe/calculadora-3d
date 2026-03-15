@@ -392,14 +392,6 @@ export default function Home() {
                 )
               })}
             </tbody>
-            <tfoot>
-              <tr style={{...styles.footerRow, ...theme.footerRow}}>
-                <td style={{...styles.tdFooter, ...theme.tdFooter}} colSpan={7}><strong>TOTALES</strong></td>
-                <td style={{...styles.tdFooter, ...styles.calculated, ...theme.calculated}}><strong>${Math.round(costoTotalGeneral).toLocaleString()}</strong></td>
-                <td style={{...styles.tdFooter, ...styles.finalPrice, ...theme.finalPrice}}><strong>${Math.round(precioTotalGeneral).toLocaleString()}</strong></td>
-                <td></td>
-              </tr>
-            </tfoot>
           </table>
         </div>
       </section>
