@@ -55,6 +55,7 @@ export default function Config() {
 
   const resetConfig = () => {
     setConfig(DEFAULT_CONFIG)
+    saveConfig(DEFAULT_CONFIG)
   }
 
   const theme = darkMode ? dark : light

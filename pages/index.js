@@ -127,10 +127,12 @@ export default function Home() {
 
   const resetProductos = () => {
     setProductos(DEFAULT_PRODUCTOS)
+    saveProductos(DEFAULT_PRODUCTOS)
   }
 
   const resetConfig = () => {
     setConfig(DEFAULT_CONFIG)
+    saveConfig(DEFAULT_CONFIG)
   }
 
   const handleInputChange = (index, field, value) => {
