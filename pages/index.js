@@ -18,21 +18,27 @@ export default function Home() {
   }, [darkMode])
 
   const [config, setConfig] = useState({
-    precioFilamentoKg: 5000,
-    precioKwh: 50,
-    potenciaW: 150,
-    precioImpresora: 150000,
+    // Materiales
+    precioFilamentoKg: 18000,
+    factorInflacion: 1.0,
+    // Energía
+    precioKwh: 115,
+    potenciaW: 200,
+    // Equipo
+    precioImpresora: 1200000,
     vidaUtilHoras: 5000,
-    horasDia: 8,
-    diasMes: 20,
-    alquiler: 100000,
-    proporcionNegocio: 0.15,
-    ads: 30000,
-    monotributo: 25000,
-    gasolina: 20000,
-    mantPorHora: 500,
-    valorHoraTrabajo: 3000,
-    overheadPorHora: 1000
+    // Operaciones
+    horasDia: 16,
+    diasMes: 30,
+    // Costos fijos
+    alquiler: 600000,
+    proporcionNegocio: 0.33,
+    ads: 200000,
+    monotributo: 180000,
+    gasolina: 80000,
+    // Mano de obra
+    mantPorHora: 90,
+    valorHoraTrabajo: 8000
   })
 
   const [productos, setProductos] = useState([
@@ -59,6 +65,7 @@ export default function Home() {
       const dataInflacion = await resInflacion.json()
       setDolar(dataDolar.venta)
       setInflacion(dataInflacion.anual)
+      setConfig(c => ({...c, factorInflacion: 1 + dataInflacion.anual / 100}))
       setLastUpdate(new Date())
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -70,8 +77,13 @@ export default function Home() {
     actualizarDatos()
   }, [])
 
+  const horasImpresionMes = config.horasDia * config.diasMes
+  const costoDesgaste = config.precioImpresora / config.vidaUtilHoras
+  const alquilerNegocio = config.alquiler * config.proporcionNegocio
+  const totalFijos = config.ads + config.monotributo + config.gasolina + alquilerNegocio
+  const overheadPorHora = totalFijos / horasImpresionMes
+
   const calcularParaProducto = (producto) => {
-    const factorInflacion = dolar ? (1 + inflacion / 100) : 1
     const resultado = calcularCosto({
       materialG: producto.materialG,
       horasImpresion: producto.horas,
@@ -80,14 +92,14 @@ export default function Home() {
       tasaFallos: producto.tasaFallos,
       ganancia: producto.ganancia,
       precioFilamentoKg: config.precioFilamentoKg,
-      factorInflacion,
+      factorInflacion: config.factorInflacion,
       precioKwh: config.precioKwh,
       potenciaW: config.potenciaW,
       precioImpresora: config.precioImpresora,
       vidaUtilHoras: config.vidaUtilHoras,
       mantPorHora: config.mantPorHora,
       valorHoraTrabajo: config.valorHoraTrabajo,
-      overheadPorHour: config.overheadPorHora
+      overheadPorHour: overheadPorHora
     })
     return resultado
   }
@@ -129,7 +141,7 @@ export default function Home() {
       <header style={{...styles.header, ...theme.header}}>
         <div style={styles.headerContent}>
           <h1 style={{...styles.title, ...theme.title}}>🖨️ Calculadora de Costos</h1>
-          <p style={{...styles.subtitle, ...theme.subtitle}}>Impresión 3D - Gestión Profesional</p>
+          <p style={{...styles.subtitle, ...theme.subtitle}}>Impresión 3D - Fantastic Plastik</p>
         </div>
         <div style={styles.headerRight}>
           <button onClick={() => setDarkMode(!darkMode)} style={{...styles.themeToggle, ...theme.themeToggle}}>
@@ -166,6 +178,12 @@ export default function Home() {
                 <span style={{...styles.dataText, ...theme.dataText}}>Inflación: <strong>{inflacion}%</strong></span>
               </div>
             )}
+            {config.factorInflacion !== 1 && (
+              <div style={{...styles.dataChip, ...theme.dataChip}}>
+                <span style={styles.dataIcon}>📊</span>
+                <span style={{...styles.dataText, ...theme.dataText}}>Factor: <strong>{config.factorInflacion.toFixed(2)}</strong></span>
+              </div>
+            )}
             {lastUpdate && (
               <span style={{...styles.lastUpdate, ...theme.lastUpdate}}>Actualizado: {lastUpdate.toLocaleTimeString()}</span>
             )}
@@ -175,71 +193,116 @@ export default function Home() {
 
       <section style={{...styles.configSection, ...theme.configSection}}>
         <h2 style={{...styles.sectionTitle, ...theme.sectionTitle}}>⚙️ Configuración Global</h2>
+        
         <div style={styles.configGrid}>
+          {/* 📦 MATERIALES */}
           <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>🎨 Material</h3>
-            <div style={styles.inputGroup}>
+            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>📦 Materiales</h3>
+            <div style={styles.configRow}>
               <label style={{...styles.label, ...theme.label}}>Precio filamento/kg ($)</label>
               <input type="number" value={config.precioFilamentoKg} onChange={e => setConfig({...config, precioFilamentoKg: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
             </div>
-            <div style={styles.inputGroup}>
-              <label style={{...styles.label, ...theme.label}}>Mant. por hora ($)</label>
-              <input type="number" value={config.mantPorHora} onChange={e => setConfig({...config, mantPorHora: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
-            </div>
           </div>
+
+          {/* ⚡ ENERGÍA */}
           <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>⚡ Electricidad</h3>
-            <div style={styles.inputGroup}>
+            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>⚡ Energía</h3>
+            <div style={styles.configRow}>
               <label style={{...styles.label, ...theme.label}}>Precio kWh ($)</label>
               <input type="number" value={config.precioKwh} onChange={e => setConfig({...config, precioKwh: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
             </div>
-            <div style={styles.inputGroup}>
-              <label style={{...styles.label, ...theme.label}}>Potencia (W)</label>
+            <div style={styles.configRow}>
+              <label style={{...styles.label, ...theme.label}}>Potencia impr. (W)</label>
               <input type="number" value={config.potenciaW} onChange={e => setConfig({...config, potenciaW: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
             </div>
           </div>
+
+          {/* 🖨️ EQUIPO */}
           <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>🖨️ Impresora</h3>
-            <div style={styles.inputGroup}>
-              <label style={{...styles.label, ...theme.label}}>Precio ($)</label>
+            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>🖨️ Equipo</h3>
+            <div style={styles.configRow}>
+              <label style={{...styles.label, ...theme.label}}>Precio impresora ($)</label>
               <input type="number" value={config.precioImpresora} onChange={e => setConfig({...config, precioImpresora: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
             </div>
-            <div style={styles.inputGroup}>
+            <div style={styles.configRow}>
               <label style={{...styles.label, ...theme.label}}>Vida útil (horas)</label>
               <input type="number" value={config.vidaUtilHoras} onChange={e => setConfig({...config, vidaUtilHoras: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
             </div>
           </div>
+
+          {/* 🏭 OPERACIONES */}
           <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>📅 Producción</h3>
-            <div style={styles.inputGroup}>
+            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>🏭 Operaciones</h3>
+            <div style={styles.configRow}>
               <label style={{...styles.label, ...theme.label}}>Horas/día</label>
               <input type="number" value={config.horasDia} onChange={e => setConfig({...config, horasDia: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
             </div>
-            <div style={styles.inputGroup}>
+            <div style={styles.configRow}>
               <label style={{...styles.label, ...theme.label}}>Días/mes</label>
               <input type="number" value={config.diasMes} onChange={e => setConfig({...config, diasMes: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
             </div>
           </div>
+
+          {/* 💰 COSTOS FIJOS */}
           <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>🏢 Costos Fijos</h3>
-            <div style={styles.inputGroup}>
+            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>💰 Costos Fijos</h3>
+            <div style={styles.configRow}>
               <label style={{...styles.label, ...theme.label}}>Alquiler ($)</label>
               <input type="number" value={config.alquiler} onChange={e => setConfig({...config, alquiler: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
             </div>
-            <div style={styles.inputGroup}>
-              <label style={{...styles.label, ...theme.label}}>Ads + Otros ($)</label>
-              <input type="number" value={config.ads + config.monotributo + config.gasolina} onChange={e => setConfig({...config, ads: parseFloat(e.target.value) - config.monotributo - config.gasolina})} style={{...styles.input, ...theme.input}} />
+            <div style={styles.configRow}>
+              <label style={{...styles.label, ...theme.label}}>% Negocio</label>
+              <input type="number" value={Math.round(config.proporcionNegocio * 100)} onChange={e => setConfig({...config, proporcionNegocio: parseFloat(e.target.value) / 100})} style={{...styles.input, ...theme.input}} />
+            </div>
+            <div style={styles.configRow}>
+              <label style={{...styles.label, ...theme.label}}>Ads ($)</label>
+              <input type="number" value={config.ads} onChange={e => setConfig({...config, ads: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
+            </div>
+            <div style={styles.configRow}>
+              <label style={{...styles.label, ...theme.label}}>Monotributo ($)</label>
+              <input type="number" value={config.monotributo} onChange={e => setConfig({...config, monotributo: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
+            </div>
+            <div style={styles.configRow}>
+              <label style={{...styles.label, ...theme.label}}>Gasolina ($)</label>
+              <input type="number" value={config.gasolina} onChange={e => setConfig({...config, gasolina: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
             </div>
           </div>
+
+          {/* 👷 MANO DE OBRA */}
           <div style={{...styles.configCard, ...theme.configCard}}>
-            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>👨‍💼 Trabajo</h3>
-            <div style={styles.inputGroup}>
+            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>👷 Mano de Obra</h3>
+            <div style={styles.configRow}>
+              <label style={{...styles.label, ...theme.label}}>Mant. por hora ($)</label>
+              <input type="number" value={config.mantPorHora} onChange={e => setConfig({...config, mantPorHora: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
+            </div>
+            <div style={styles.configRow}>
               <label style={{...styles.label, ...theme.label}}>Valor hora ($)</label>
               <input type="number" value={config.valorHoraTrabajo} onChange={e => setConfig({...config, valorHoraTrabajo: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
             </div>
-            <div style={styles.inputGroup}>
-              <label style={{...styles.label, ...theme.label}}>Overhead/hora ($)</label>
-              <input type="number" value={config.overheadPorHora} onChange={e => setConfig({...config, overheadPorHora: parseFloat(e.target.value)})} style={{...styles.input, ...theme.input}} />
+          </div>
+
+          {/* 📊 RESUMEN CALCULADO */}
+          <div style={{...styles.configCard, ...styles.summaryCard, ...theme.summaryCard}}>
+            <h3 style={{...styles.configCardTitle, ...theme.configCardTitle}}>📊 Resumen</h3>
+            <div style={styles.summaryRow}>
+              <span style={{...styles.summaryLabel, ...theme.summaryLabel}}>Horas/mes:</span>
+              <span style={{...styles.summaryValue, ...theme.summaryValue}}>{horasImpresionMes.toLocaleString()}</span>
+            </div>
+            <div style={styles.summaryRow}>
+              <span style={{...styles.summaryLabel, ...theme.summaryLabel}}>Desgaste ($/h):</span>
+              <span style={{...styles.summaryValue, ...theme.summaryValue}}>${Math.round(costoDesgaste).toLocaleString()}</span>
+            </div>
+            <div style={styles.summaryRow}>
+              <span style={{...styles.summaryLabel, ...theme.summaryLabel}}>Alquiler negocio:</span>
+              <span style={{...styles.summaryValue, ...theme.summaryValue}}>${Math.round(alquilerNegocio).toLocaleString()}</span>
+            </div>
+            <div style={styles.summaryRow}>
+              <span style={{...styles.summaryLabel, ...theme.summaryLabel}}>Total fijos/mes:</span>
+              <span style={{...styles.summaryValue, ...theme.summaryValue}}>${Math.round(totalFijos).toLocaleString()}</span>
+            </div>
+            <div style={{...styles.summaryRow, ...styles.summaryRowHighlight}}>
+              <span style={{...styles.summaryLabel, ...theme.summaryLabel}}>Overhead ($/h):</span>
+              <span style={{...styles.summaryValueHighlight, ...theme.summaryValueHighlight}}>${Math.round(overheadPorHora).toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -257,16 +320,16 @@ export default function Home() {
           <table style={styles.table}>
             <thead>
               <tr style={{...styles.headerRow, ...theme.headerRow}}>
-                <th style={{...styles.th, width: '180px'}}>Producto</th>
-                <th style={{...styles.th, width: '80px'}}>Material(g)</th>
-                <th style={{...styles.th, width: '70px'}}>Horas</th>
-                <th style={{...styles.th, width: '70px'}}>Min Trab</th>
-                <th style={{...styles.th, width: '80px'}}>Packaging</th>
-                <th style={{...styles.th, width: '80px'}}>Tasa Fallos</th>
-                <th style={{...styles.th, width: '80px'}}>% Ganancia</th>
-                <th style={{...styles.th, width: '100px'}}>COSTO</th>
-                <th style={{...styles.th, width: '110px'}}>PRECIO FINAL</th>
-                <th style={{...styles.th, width: '50px'}}></th>
+                <th style={{...styles.th, width: '160px'}}>Producto</th>
+                <th style={{...styles.th, width: '70px'}}>Material(g)</th>
+                <th style={{...styles.th, width: '60px'}}>Horas</th>
+                <th style={{...styles.th, width: '60px'}}>Min Trab</th>
+                <th style={{...styles.th, width: '70px'}}>Packaging</th>
+                <th style={{...styles.th, width: '70px'}}>Tasa Fallos</th>
+                <th style={{...styles.th, width: '70px'}}>% Ganancia</th>
+                <th style={{...styles.th, width: '90px'}}>COSTO</th>
+                <th style={{...styles.th, width: '100px'}}>PRECIO FINAL</th>
+                <th style={{...styles.th, width: '40px'}}></th>
               </tr>
             </thead>
             <tbody>
@@ -341,23 +404,27 @@ const light = {
   lastUpdate: { color: '#64748b' },
   configSection: { backgroundColor: '#ffffff' },
   configCard: { background: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-  configCardTitle: { color: '#1a365d', fontWeight: '700' },
-  label: { color: '#334155', fontWeight: '600' },
-  input: { border: '2px solid #cbd5e1', backgroundColor: '#ffffff', color: '#1e293b', fontWeight: '500' },
+  summaryCard: { background: '#f0fdf4', border: '2px solid #22c55e' },
+  configCardTitle: { color: '#1a365d', fontWeight: '700', fontSize: '13px' },
+  label: { color: '#475569', fontWeight: '600', fontSize: '11px' },
+  input: { border: '1px solid #cbd5e1', backgroundColor: '#ffffff', color: '#1e293b', fontWeight: '500', fontSize: '12px', padding: '6px 8px' },
+  summaryLabel: { color: '#166534', fontWeight: '600', fontSize: '12px' },
+  summaryValue: { color: '#166534', fontWeight: '700', fontSize: '12px' },
+  summaryValueHighlight: { color: '#15803d', fontWeight: '800', fontSize: '14px' },
   tableSection: { backgroundColor: '#ffffff' },
   sectionTitle: { color: '#1a365d', fontWeight: '700' },
   addButton: { backgroundColor: '#2d8b8b' },
   resetButton: { backgroundColor: '#dc2626' },
   headerRow: { backgroundColor: '#1a365d' },
-  th: { color: '#ffffff', fontWeight: '700' },
+  th: { color: '#ffffff', fontWeight: '700', fontSize: '10px' },
   row: { borderBottom: '1px solid #e2e8f0' },
-  td: { color: '#1e293b', fontWeight: '500' },
-  inputText: { border: '2px solid #2d8b8b', color: '#1a365d', backgroundColor: '#f0fdfa', fontWeight: '600' },
-  inputNumber: { border: '2px solid #2d8b8b', color: '#1a365d', backgroundColor: '#f0fdfa', fontWeight: '600' },
-  calculated: { backgroundColor: '#dcfce7', color: '#166534', fontWeight: '700' },
-  finalPrice: { backgroundColor: '#dcfce7', color: '#15803d', fontWeight: '700' },
+  td: { color: '#1e293b', fontSize: '12px' },
+  inputText: { border: '1px solid #2d8b8b', color: '#1a365d', backgroundColor: '#f0fdfa', fontWeight: '600', fontSize: '12px', padding: '5px' },
+  inputNumber: { border: '1px solid #2d8b8b', color: '#1a365d', backgroundColor: '#f0fdfa', fontWeight: '600', fontSize: '12px', padding: '5px', width: '60px' },
+  calculated: { backgroundColor: '#dcfce7', color: '#166534', fontWeight: '700', fontSize: '12px' },
+  finalPrice: { backgroundColor: '#dcfce7', color: '#15803d', fontWeight: '700', fontSize: '13px' },
   footerRow: { backgroundColor: '#f1f5f9' },
-  tdFooter: { color: '#1a365d', fontWeight: '700' },
+  tdFooter: { color: '#1a365d', fontWeight: '700', fontSize: '12px' },
   deleteButton: { color: '#dc2626', fontWeight: '700' },
   footer: { color: '#64748b', backgroundColor: '#f5f7fa' }
 }
@@ -380,209 +447,226 @@ const dark = {
   lastUpdate: { color: 'rgba(241, 250, 238, 0.5)' },
   configSection: { backgroundColor: '#1e293b' },
   configCard: { background: '#0f172a', border: '1px solid #334155' },
-  configCardTitle: { color: '#2d8b8b' },
-  label: { color: '#94a3b8' },
-  input: { border: '1px solid #334155', backgroundColor: '#0f172a', color: '#f1faee' },
+  summaryCard: { background: 'rgba(34, 197, 94, 0.1)', border: '2px solid #22c55e' },
+  configCardTitle: { color: '#2d8b8b', fontWeight: '700', fontSize: '13px' },
+  label: { color: '#94a3b8', fontWeight: '600', fontSize: '11px' },
+  input: { border: '1px solid #334155', backgroundColor: '#0f172a', color: '#f1faee', fontWeight: '500', fontSize: '12px', padding: '6px 8px' },
+  summaryLabel: { color: '#86efac', fontWeight: '600', fontSize: '12px' },
+  summaryValue: { color: '#86efac', fontWeight: '700', fontSize: '12px' },
+  summaryValueHighlight: { color: '#4ade80', fontWeight: '800', fontSize: '14px' },
   tableSection: { backgroundColor: '#1e293b' },
-  sectionTitle: { color: '#f1faee' },
+  sectionTitle: { color: '#f1faee', fontWeight: '700' },
   addButton: { backgroundColor: '#2d8b8b' },
   resetButton: { backgroundColor: '#dc2626' },
   headerRow: { backgroundColor: '#0f172a' },
-  th: { color: '#f1faee' },
+  th: { color: '#f1faee', fontWeight: '700', fontSize: '10px' },
   row: { borderBottom: '1px solid #334155' },
-  td: { color: '#e2e8f0' },
-  inputText: { border: '1px solid #2d8b8b', color: '#f1faee', backgroundColor: '#0f172a' },
-  inputNumber: { border: '1px solid #2d8b8b', color: '#f1faee', backgroundColor: '#0f172a' },
-  calculated: { backgroundColor: '#14532d', color: '#86efac' },
-  finalPrice: { backgroundColor: '#166534', color: '#4ade80' },
+  td: { color: '#e2e8f0', fontSize: '12px' },
+  inputText: { border: '1px solid #2d8b8b', color: '#f1faee', backgroundColor: '#0f172a', fontWeight: '600', fontSize: '12px', padding: '5px' },
+  inputNumber: { border: '1px solid #2d8b8b', color: '#f1faee', backgroundColor: '#0f172a', fontWeight: '600', fontSize: '12px', padding: '5px', width: '60px' },
+  calculated: { backgroundColor: '#14532d', color: '#86efac', fontWeight: '700', fontSize: '12px' },
+  finalPrice: { backgroundColor: '#166534', color: '#4ade80', fontWeight: '700', fontSize: '13px' },
   footerRow: { backgroundColor: '#0f172a' },
-  tdFooter: { color: '#e2e8f0' },
-  deleteButton: { color: '#f87171' },
-  footer: { color: '#94a3b8' }
+  tdFooter: { color: '#e2e8f0', fontWeight: '700', fontSize: '12px' },
+  deleteButton: { color: '#f87171', fontWeight: '700' },
+  footer: { color: '#94a3b8', backgroundColor: '#0f172a' }
 }
 
 const styles = {
   container: { 
     minHeight: '100vh', 
     fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif",
-    transition: 'background-color 0.3s',
-    backgroundColor: '#f5f7fa'
+    transition: 'background-color 0.3s'
   },
   header: {
-    padding: '30px 40px',
+    padding: '20px 30px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     flexWrap: 'wrap',
-    gap: '20px',
+    gap: '15px',
     boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
   },
   headerContent: {},
   headerRight: {
     display: 'flex',
     alignItems: 'center',
-    gap: '20px'
+    gap: '15px'
   },
   title: {
-    fontSize: '32px',
+    fontSize: '26px',
     fontWeight: '700',
     margin: 0,
     letterSpacing: '-0.5px'
   },
   subtitle: {
-    fontSize: '14px',
-    margin: '5px 0 0 0'
+    fontSize: '13px',
+    margin: '3px 0 0 0'
   },
   themeToggle: {
-    padding: '10px 16px',
+    padding: '8px 14px',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: '600',
-    transition: 'all 0.2s'
+    fontSize: '13px',
+    fontWeight: '600'
   },
   headerStats: {
     display: 'flex',
-    gap: '15px'
+    gap: '12px'
   },
   statCard: {
-    padding: '15px 25px',
-    borderRadius: '12px',
+    padding: '12px 18px',
+    borderRadius: '10px',
     textAlign: 'center',
     border: '1px solid rgba(255,255,255,0.2)'
   },
   statCardHighlight: {},
   statLabel: {
     display: 'block',
-    fontSize: '11px',
+    fontSize: '10px',
     textTransform: 'uppercase',
-    letterSpacing: '1px',
-    marginBottom: '5px'
+    letterSpacing: '0.5px',
+    marginBottom: '3px'
   },
   statValue: {
-    fontSize: '24px',
+    fontSize: '20px',
     fontWeight: '700'
   },
   statValueGreen: {
-    fontSize: '24px',
+    fontSize: '20px',
     fontWeight: '700'
   },
   dataSection: {
-    padding: '15px 40px'
+    padding: '12px 30px'
   },
   dataInfo: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     flexWrap: 'wrap',
-    gap: '15px'
+    gap: '12px'
   },
   refreshButton: {
-    padding: '10px 20px',
+    padding: '8px 16px',
     color: 'white',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '6px',
     cursor: 'pointer',
-    fontSize: '14px',
+    fontSize: '13px',
     fontWeight: '600'
   },
   dataDisplay: {
     display: 'flex',
-    gap: '15px',
+    gap: '12px',
     alignItems: 'center',
     flexWrap: 'wrap'
   },
   dataChip: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    padding: '8px 15px',
-    borderRadius: '20px',
-    fontSize: '14px'
+    gap: '6px',
+    padding: '6px 12px',
+    borderRadius: '16px',
+    fontSize: '12px'
   },
   dataIcon: {
-    fontSize: '16px'
+    fontSize: '14px'
   },
   dataText: {},
   lastUpdate: {
-    fontSize: '12px'
+    fontSize: '11px'
   },
   configSection: {
-    padding: '30px 40px',
-    margin: '20px 40px',
-    borderRadius: '16px',
+    padding: '20px 30px',
+    margin: '15px 30px',
+    borderRadius: '12px',
     boxShadow: '0 2px 15px rgba(0,0,0,0.08)'
   },
   sectionTitle: {
-    marginBottom: '20px',
-    fontSize: '20px',
+    marginBottom: '15px',
+    fontSize: '18px',
     fontWeight: '600'
   },
   configGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-    gap: '20px'
+    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+    gap: '12px'
   },
   configCard: {
-    padding: '20px',
-    borderRadius: '12px'
+    padding: '12px',
+    borderRadius: '10px'
+  },
+  summaryCard: {
+    padding: '12px',
+    borderRadius: '10px'
   },
   configCardTitle: {
-    fontSize: '14px',
-    marginBottom: '15px',
+    fontSize: '12px',
+    marginBottom: '10px',
     fontWeight: '600'
   },
-  inputGroup: {
-    marginBottom: '12px'
+  configRow: {
+    marginBottom: '6px'
   },
   label: {
     display: 'block',
-    fontSize: '12px',
-    marginBottom: '5px'
+    fontSize: '10px',
+    marginBottom: '2px'
   },
   input: {
     width: '100%',
-    padding: '10px 12px',
-    borderRadius: '8px',
-    fontSize: '14px',
+    borderRadius: '6px',
     outline: 'none'
   },
+  summaryRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: '4px 0'
+  },
+  summaryRowHighlight: {
+    borderTop: '1px solid',
+    marginTop: '4px',
+    paddingTop: '6px'
+  },
+  summaryLabel: {},
+  summaryValue: {},
+  summaryValueHighlight: {},
   tableSection: {
-    padding: '30px 40px',
-    margin: '20px 40px',
-    borderRadius: '16px',
+    padding: '20px 30px',
+    margin: '15px 30px',
+    borderRadius: '12px',
     boxShadow: '0 2px 15px rgba(0,0,0,0.08)'
   },
   tableHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '20px',
+    marginBottom: '15px',
     flexWrap: 'wrap',
-    gap: '15px'
+    gap: '12px'
   },
   tableActions: {
     display: 'flex',
-    gap: '10px'
+    gap: '8px'
   },
   addButton: {
-    padding: '10px 20px',
+    padding: '8px 16px',
     color: 'white',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '6px',
     cursor: 'pointer',
     fontWeight: '600',
-    fontSize: '14px'
+    fontSize: '13px'
   },
   resetButton: {
-    padding: '10px 20px',
+    padding: '8px 16px',
     color: 'white',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '6px',
     cursor: 'pointer',
     fontWeight: '600',
-    fontSize: '14px'
+    fontSize: '13px'
   },
   tableWrapper: {
     overflowX: 'auto'
@@ -590,65 +674,62 @@ const styles = {
   table: {
     width: '100%',
     borderCollapse: 'collapse',
-    minWidth: '900px'
+    minWidth: '750px'
   },
   headerRow: {},
   th: {
-    padding: '14px 10px',
+    padding: '10px 8px',
     textAlign: 'left',
-    fontSize: '11px',
+    fontSize: '10px',
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: '0.5px'
+    letterSpacing: '0.3px'
   },
   row: {
     transition: 'background-color 0.2s'
   },
   td: {
-    padding: '12px 10px'
+    padding: '8px 6px'
   },
   inputText: {
     width: '100%',
-    padding: '8px 10px',
-    borderRadius: '6px',
-    fontSize: '13px',
+    borderRadius: '4px',
+    fontSize: '12px',
     fontWeight: '500'
   },
   inputNumber: {
-    width: '70px',
-    padding: '8px',
-    borderRadius: '6px',
-    fontSize: '13px',
+    borderRadius: '4px',
+    fontSize: '12px',
     textAlign: 'right'
   },
   calculated: {
     textAlign: 'right',
     fontWeight: '700',
-    fontSize: '14px'
+    fontSize: '12px'
   },
   finalPrice: {
     textAlign: 'right',
     fontWeight: '700',
-    fontSize: '15px'
+    fontSize: '13px'
   },
   footerRow: {},
   tdFooter: {
-    padding: '15px 10px',
+    padding: '12px 8px',
     textAlign: 'right',
-    fontSize: '14px'
+    fontSize: '13px'
   },
   deleteButton: {
     background: 'none',
     border: 'none',
-    fontSize: '20px',
+    fontSize: '18px',
     cursor: 'pointer',
-    padding: '5px 10px',
+    padding: '4px 8px',
     borderRadius: '4px',
     fontWeight: 'bold'
   },
   footer: {
     textAlign: 'center',
-    padding: '20px',
-    fontSize: '13px'
+    padding: '15px',
+    fontSize: '12px'
   }
 }
