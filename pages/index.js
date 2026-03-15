@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { calcularCosto } from '../lib/calculos'
+import { loadConfig, saveConfig, loadProductos, saveProductos, saveExchangeRate } from '../lib/supabase'
 
 const DEFAULT_CONFIG = {
   precioFilamentoKg: 18000,
@@ -51,29 +52,25 @@ export default function Home() {
   }, [darkMode])
 
   useEffect(() => {
-    const savedConfig = localStorage.getItem('calc3d_config')
-    if (savedConfig) {
-      try {
-        setConfig({ ...DEFAULT_CONFIG, ...JSON.parse(savedConfig) })
-      } catch (e) {}
+    const loadData = async () => {
+      const { data: configData } = await loadConfig()
+      if (configData?.config_data) {
+        setConfig({ ...DEFAULT_CONFIG, ...configData.config_data })
+      }
+      const { data: productosData } = await loadProductos()
+      if (productosData?.productos_data) {
+        setProductos(productosData.productos_data)
+      }
     }
+    loadData()
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('calc3d_config', JSON.stringify(config))
+    saveConfig(config)
   }, [config])
 
   useEffect(() => {
-    const savedProductos = localStorage.getItem('calc3d_productos')
-    if (savedProductos) {
-      try {
-        setProductos(JSON.parse(savedProductos))
-      } catch (e) {}
-    }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('calc3d_productos', JSON.stringify(productos))
+    saveProductos(productos)
   }, [productos])
 
   const actualizarDatos = async () => {
@@ -89,6 +86,7 @@ export default function Home() {
       setInflacion(dataInflacion.anual)
       setConfig(c => ({...c, factorInflacion: 1 + dataInflacion.anual / 100}))
       setLastUpdate(new Date())
+      await saveExchangeRate(dataDolar.venta, dataInflacion.anual)
     } catch (error) {
       console.error('Error fetching data:', error)
     }
