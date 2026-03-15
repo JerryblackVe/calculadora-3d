@@ -56,12 +56,38 @@ export default function Home() {
   useEffect(() => {
     const loadData = async () => {
       const { data: configData } = await loadConfig()
-      if (configData?.config_data) {
-        setConfig({ ...DEFAULT_CONFIG, ...configData.config_data })
+      if (configData) {
+        setConfig({
+          precioFilamentoKg: configData.precio_filamento_kg || 18000,
+          factorInflacion: 1.0,
+          precioKwh: configData.precio_kwh || 115,
+          potenciaW: configData.potencia_w || 200,
+          precioImpresora: configData.precio_impresora || 1200000,
+          vidaUtilHoras: configData.vida_util_horas || 5000,
+          horasDia: configData.horas_dia || 16,
+          diasMes: configData.dias_mes || 30,
+          alquiler: configData.alquiler_mensual || 600000,
+          proporcionNegocio: configData.proporcion_espacio || 0.33,
+          ads: configData.facebook_ads || 200000,
+          monotributo: configData.monotributo || 180000,
+          gasolina: configData.gasolina || 80000,
+          mantPorHora: configData.mant_por_hora || 90,
+          valorHoraTrabajo: configData.valor_hora_trabajo || 8000
+        })
       }
       const { data: productosData } = await loadProductos()
-      if (productosData?.productos_data) {
-        setProductos(productosData.productos_data)
+      if (productosData && productosData.length > 0) {
+        const mapped = productosData.map(p => ({
+          id: p.id,
+          nombre: p.nombre || '',
+          materialG: p.material_g || 0,
+          horas: p.horas_impresion || 0,
+          minTrabajo: p.min_trabajo || 0,
+          packaging: p.packaging || 0,
+          tasaFallos: p.tasa_fallos || 0,
+          ganancia: p.porcentaje_ganancia || 0.3
+        }))
+        setProductos(mapped)
       }
     }
     loadData()
