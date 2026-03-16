@@ -23,16 +23,16 @@ const DEFAULT_CONFIG = {
 }
 
 const DEFAULT_PRODUCTOS = [
-  { id: 1, nombre: 'Figura decorativa', materialG: 50, horas: 2, minTrabajo: 15, packaging: 200, tasaFallos: 0.05, ganancia: 0.3 },
-  { id: 2, nombre: 'Soporte teléfono', materialG: 30, horas: 1.5, minTrabajo: 10, packaging: 150, tasaFallos: 0.03, ganancia: 0.3 },
-  { id: 3, nombre: 'Tornillo personalizado', materialG: 10, horas: 0.5, minTrabajo: 5, packaging: 100, tasaFallos: 0.02, ganancia: 0.3 },
-  { id: 4, nombre: 'Engranaje', materialG: 25, horas: 1, minTrabajo: 10, packaging: 150, tasaFallos: 0.03, ganancia: 0.3 },
-  { id: 5, nombre: 'Copa', materialG: 80, horas: 3, minTrabajo: 20, packaging: 250, tasaFallos: 0.08, ganancia: 0.3 },
-  { id: 6, nombre: 'Maceta', materialG: 150, horas: 4, minTrabajo: 25, packaging: 300, tasaFallos: 0.1, ganancia: 0.3 },
-  { id: 7, nombre: 'Llavero', materialG: 8, horas: 0.5, minTrabajo: 5, packaging: 80, tasaFallos: 0.02, ganancia: 0.3 },
-  { id: 8, nombre: 'Caja organizadora', materialG: 100, horas: 3.5, minTrabajo: 20, packaging: 250, tasaFallos: 0.07, ganancia: 0.3 },
-  { id: 9, nombre: 'Pelota', materialG: 60, horas: 2.5, minTrabajo: 15, packaging: 200, tasaFallos: 0.06, ganancia: 0.3 },
-  { id: 10, nombre: 'Jarrón', materialG: 200, horas: 5, minTrabajo: 30, packaging: 350, tasaFallos: 0.12, ganancia: 0.3 }
+  { id: 1, nombre: 'Figura decorativa', materialG: 50, horas: 2, minTrabajo: 15, packaging: 200, tasaFallos: 0.05, ganancia: 0.3, orden: 1 },
+  { id: 2, nombre: 'Soporte teléfono', materialG: 30, horas: 1.5, minTrabajo: 10, packaging: 150, tasaFallos: 0.03, ganancia: 0.3, orden: 2 },
+  { id: 3, nombre: 'Tornillo personalizado', materialG: 10, horas: 0.5, minTrabajo: 5, packaging: 100, tasaFallos: 0.02, ganancia: 0.3, orden: 3 },
+  { id: 4, nombre: 'Engranaje', materialG: 25, horas: 1, minTrabajo: 10, packaging: 150, tasaFallos: 0.03, ganancia: 0.3, orden: 4 },
+  { id: 5, nombre: 'Copa', materialG: 80, horas: 3, minTrabajo: 20, packaging: 250, tasaFallos: 0.08, ganancia: 0.3, orden: 5 },
+  { id: 6, nombre: 'Maceta', materialG: 150, horas: 4, minTrabajo: 25, packaging: 300, tasaFallos: 0.1, ganancia: 0.3, orden: 6 },
+  { id: 7, nombre: 'Llavero', materialG: 8, horas: 0.5, minTrabajo: 5, packaging: 80, tasaFallos: 0.02, ganancia: 0.3, orden: 7 },
+  { id: 8, nombre: 'Caja organizadora', materialG: 100, horas: 3.5, minTrabajo: 20, packaging: 250, tasaFallos: 0.07, ganancia: 0.3, orden: 8 },
+  { id: 9, nombre: 'Pelota', materialG: 60, horas: 2.5, minTrabajo: 15, packaging: 200, tasaFallos: 0.06, ganancia: 0.3, orden: 9 },
+  { id: 10, nombre: 'Jarrón', materialG: 200, horas: 5, minTrabajo: 30, packaging: 350, tasaFallos: 0.12, ganancia: 0.3, orden: 10 }
 ]
 
 export default function Home() {
@@ -92,40 +92,14 @@ export default function Home() {
           minTrabajo: p.min_trabajo || 0,
           packaging: p.packaging || 0,
           tasaFallos: p.tasa_fallos || 0,
-          ganancia: p.porcentaje_ganancia || 0.3
+          ganancia: p.porcentaje_ganancia || 0.3,
+          orden: p.orden || p.id
         }))
         setProductos(mapped)
       }
     }
     loadData()
   }, [])
-
-  useEffect(() => {
-    saveConfig(config)
-  }, [config])
-
-  useEffect(() => {
-    saveProductos(productos)
-  }, [productos])
-
-  const actualizarDatos = async () => {
-    setLoading(true)
-    try {
-      const [resDolar, resInflacion] = await Promise.all([
-        fetch('/api/dolar'),
-        fetch('/api/inflacion')
-      ])
-      const dataDolar = await resDolar.json()
-      const dataInflacion = await resInflacion.json()
-      setDolar(dataDolar.venta)
-      setInflacion(dataInflacion.anual)
-      setConfig(c => ({...c, factorInflacion: 1 + dataInflacion.anual / 100, dolar: dataDolar.venta, inflacion: dataInflacion.anual}))
-      setLastUpdate(new Date())
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    }
-    setLoading(false)
-  }
 
   useEffect(() => {
     actualizarDatos()
@@ -172,11 +146,25 @@ export default function Home() {
   ]
 
   const resetProductos = async () => {
-    console.log('>>> RESET: User confirmed, calling saveProductos with empty products')
+    console.log('>>> RESET: User confirmed, creating empty products')
     if (!confirm('¿Borrar todos los productos?')) return
-    await saveProductos(emptyProducts)
+    
+    const productosVacios = productos.map((p, i) => ({
+      id: p.id,
+      nombre: '',
+      materialG: 0,
+      horas: 0,
+      minTrabajo: 0,
+      packaging: 0,
+      tasaFallos: 0,
+      ganancia: 0.40,
+      orden: i + 1
+    }))
+    
+    console.log('>>> RESET: Saving empty products:', productosVacios)
+    await saveProductos(productosVacios)
     console.log('>>> RESET: After saveProductos, setting state')
-    setProductos(emptyProducts)
+    setProductos(productosVacios)
     console.log('>>> RESET: Done')
   }
 
