@@ -65,12 +65,6 @@ export default function Home() {
       
       setConfig(prev => ({ ...prev, factorInflacion: factor }))
       setLastUpdate(new Date())
-      
-      await saveConfig({
-        ...config,
-        dolar_oficial: dataDolar.venta || 0,
-        inflacion_anual: dataInflacion.anual || 0
-      })
     } catch (e) {
       console.error('Error actualizando datos:', e)
     }
@@ -130,10 +124,6 @@ export default function Home() {
       }
     }
     loadData()
-  }, [])
-
-  useEffect(() => {
-    actualizarDatos()
   }, [])
 
   const horasImpresionMes = config.horasDia * config.diasMes
