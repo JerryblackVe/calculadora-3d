@@ -46,6 +46,37 @@ export default function Home() {
   const [productos, setProductos] = useState(DEFAULT_PRODUCTOS)
   const [saved, setSaved] = useState(false)
 
+  const actualizarDatos = async () => {
+    setLoading(true)
+    try {
+      const [resDolar, resInflacion] = await Promise.all([
+        fetch('/api/dolar'),
+        fetch('/api/inflacion')
+      ])
+      const dataDolar = await resDolar.json()
+      const dataInflacion = await resInflacion.json()
+      
+      if (dataDolar.venta) setDolar(dataDolar.venta)
+      if (dataInflacion.anual) setInflacion(dataInflacion.anual)
+      
+      const factor = dataInflacion.anual 
+        ? 1 + dataInflacion.anual / 100 
+        : 1
+      
+      setConfig(prev => ({ ...prev, factorInflacion: factor }))
+      setLastUpdate(new Date())
+      
+      await saveConfig({
+        ...config,
+        dolar_oficial: dataDolar.venta || 0,
+        inflacion_anual: dataInflacion.anual || 0
+      })
+    } catch (e) {
+      console.error('Error actualizando datos:', e)
+    }
+    setLoading(false)
+  }
+
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('calc3d_darkMode')
     if (savedDarkMode !== null) setDarkMode(savedDarkMode === 'true')
