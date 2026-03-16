@@ -26,12 +26,16 @@ export default function Config() {
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
-    const savedDarkMode = localStorage.getItem('calc3d_darkMode')
-    if (savedDarkMode !== null) setDarkMode(savedDarkMode === 'true')
+    if (typeof window !== 'undefined') {
+      const savedDarkMode = localStorage.getItem('calc3d_darkMode')
+      if (savedDarkMode !== null) setDarkMode(savedDarkMode === 'true')
+    }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('calc3d_darkMode', darkMode)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('calc3d_darkMode', darkMode)
+    }
   }, [darkMode])
 
   useEffect(() => {
