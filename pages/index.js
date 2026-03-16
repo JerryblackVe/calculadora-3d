@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { calcularCosto } from '../lib/calculos'
-import { loadConfig, saveConfig, loadProductos, saveProductos, saveExchangeRate } from '../lib/supabase'
+import { loadConfig, saveConfig, loadProductos, saveProductos } from '../lib/supabase'
 
 // Fantastic Plastik - Calculadora de Costos 3D
 const DEFAULT_CONFIG = {
@@ -74,8 +74,12 @@ export default function Home() {
           monotributo: configData.monotributo || 180000,
           gasolina: configData.gasolina || 80000,
           mantPorHora: configData.mant_por_hora || 90,
-          valorHoraTrabajo: configData.valor_hora_trabajo || 8000
+          valorHoraTrabajo: configData.valor_hora_trabajo || 8000,
+          dolar: configData.dolar_oficial || null,
+          inflacion: configData.inflacion_anual || null
         })
+        if (configData.dolar_oficial) setDolar(configData.dolar_oficial)
+        if (configData.inflacion_anual) setInflacion(configData.inflacion_anual)
       }
       const { data: productosData } = await loadProductos()
       console.log('>>> LOAD: productos loaded from Supabase:', productosData?.length || 0)
@@ -115,9 +119,8 @@ export default function Home() {
       const dataInflacion = await resInflacion.json()
       setDolar(dataDolar.venta)
       setInflacion(dataInflacion.anual)
-      setConfig(c => ({...c, factorInflacion: 1 + dataInflacion.anual / 100}))
+      setConfig(c => ({...c, factorInflacion: 1 + dataInflacion.anual / 100, dolar: dataDolar.venta, inflacion: dataInflacion.anual}))
       setLastUpdate(new Date())
-      await saveExchangeRate(dataDolar.venta, dataInflacion.anual)
     } catch (error) {
       console.error('Error fetching data:', error)
     }
