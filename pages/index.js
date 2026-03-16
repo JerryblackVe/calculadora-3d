@@ -128,15 +128,6 @@ export default function Home() {
     setLoading(false)
   }
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('calc3d_darkMode')
-    if (savedDarkMode !== null) setDarkMode(savedDarkMode === 'true')
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('calc3d_darkMode', darkMode)
-  }, [darkMode])
-
   const horasImpresionMes = config.horasDia * config.diasMes
   const costoDesgaste = config.precioImpresora / config.vidaUtilHoras
   const alquilerNegocio = config.alquiler * config.proporcionNegocio
