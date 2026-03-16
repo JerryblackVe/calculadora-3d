@@ -36,7 +36,6 @@ const DEFAULT_PRODUCTOS = [
 ]
 
 export default function Home() {
-  console.log('>>> COMPONENT: Home rendered')
   const [dolar, setDolar] = useState(null)
   const [inflacion, setInflacion] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -107,7 +106,6 @@ export default function Home() {
         if (configData.inflacion_anual) setInflacion(configData.inflacion_anual)
       }
       const { data: productosData } = await loadProductos()
-      console.log('>>> LOAD: productos loaded from Supabase:', productosData?.length || 0)
       if (productosData && productosData.length > 0) {
         const mapped = productosData.map(p => ({
           id: p.id,
@@ -167,7 +165,6 @@ export default function Home() {
   ]
 
   const resetProductos = async () => {
-    console.log('>>> RESET: User confirmed, creating empty products')
     if (!confirm('¿Borrar todos los productos?')) return
     
     const productosVacios = productos.map((p, i) => ({
@@ -182,18 +179,13 @@ export default function Home() {
       orden: i + 1
     }))
     
-    console.log('>>> RESET: Saving empty products:', productosVacios)
     await saveProductos(productosVacios)
-    console.log('>>> RESET: After saveProductos, setting state')
     setProductos(productosVacios)
-    console.log('>>> RESET: Done')
   }
 
   const guardarCambios = async () => {
-    console.log('>>> GUARDAR: Starting save...')
     await saveConfig(config)
     await saveProductos(productos)
-    console.log('>>> GUARDAR: Save complete, showing feedback')
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
