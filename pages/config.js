@@ -3,21 +3,21 @@ import Link from 'next/link'
 import { loadConfig, saveConfig } from '../lib/supabase'
 
 const DEFAULT_CONFIG = {
-  precioFilamentoKg: 18000,
+  precioFilamentoKg: 0,
   factorInflacion: 1.0,
-  precioKwh: 115,
-  potenciaW: 200,
-  precioImpresora: 1200000,
-  vidaUtilHoras: 5000,
-  horasDia: 16,
-  diasMes: 30,
-  alquiler: 600000,
-  proporcionNegocio: 0.33,
-  ads: 200000,
-  monotributo: 180000,
-  gasolina: 80000,
-  mantPorHora: 90,
-  valorHoraTrabajo: 8000
+  precioKwh: 0,
+  potenciaW: 0,
+  precioImpresora: 0,
+  vidaUtilHoras: 0,
+  horasDia: 0,
+  diasMes: 0,
+  alquiler: 0,
+  proporcionNegocio: 0,
+  ads: 0,
+  monotributo: 0,
+  gasolina: 0,
+  mantPorHora: 0,
+  valorHoraTrabajo: 0
 }
 
 export default function Config() {
@@ -43,21 +43,21 @@ export default function Config() {
       const { data: configData } = await loadConfig()
       if (configData) {
         setConfig({
-          precioFilamentoKg: configData.precio_filamento_kg || 18000,
+          precioFilamentoKg: configData.precio_filamento_kg ?? 0,
           factorInflacion: 1.0,
-          precioKwh: configData.precio_kwh || 115,
-          potenciaW: configData.potencia_w || 200,
-          precioImpresora: configData.precio_impresora || 1200000,
-          vidaUtilHoras: configData.vida_util_horas || 5000,
-          horasDia: configData.horas_dia || 16,
-          diasMes: configData.dias_mes || 30,
-          alquiler: configData.alquiler_mensual || 600000,
-          proporcionNegocio: configData.proporcion_espacio || 0.33,
-          ads: configData.facebook_ads || 200000,
-          monotributo: configData.monotributo || 180000,
-          gasolina: configData.gasolina || 80000,
-          mantPorHora: configData.mant_por_hora || 90,
-          valorHoraTrabajo: configData.valor_hora_trabajo || 8000
+          precioKwh: configData.precio_kwh ?? 0,
+          potenciaW: configData.potencia_w ?? 0,
+          precioImpresora: configData.precio_impresora ?? 0,
+          vidaUtilHoras: configData.vida_util_horas ?? 0,
+          horasDia: configData.horas_dia ?? 0,
+          diasMes: configData.dias_mes ?? 0,
+          alquiler: configData.alquiler_mensual ?? 0,
+          proporcionNegocio: configData.proporcion_espacio ?? 0,
+          ads: configData.facebook_ads ?? 0,
+          monotributo: configData.monotributo ?? 0,
+          gasolina: configData.gasolina ?? 0,
+          mantPorHora: configData.mant_por_hora ?? 0,
+          valorHoraTrabajo: configData.valor_hora_trabajo ?? 0
         })
       }
     }
