@@ -71,7 +71,12 @@ export default function Config() {
   const overheadPorHora = totalFijos / horasImpresionMes
 
   const guardarCambios = async () => {
-    await saveConfig(config)
+    const { error } = await saveConfig(config)
+    if (error) {
+      console.error('Error guardando config:', error)
+      alert('Error al guardar: ' + (error.message || JSON.stringify(error)))
+      return
+    }
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }

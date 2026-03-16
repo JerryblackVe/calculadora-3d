@@ -188,8 +188,18 @@ export default function Home() {
   }
 
   const guardarCambios = async () => {
-    await saveConfig(config)
-    await saveProductos(productos)
+    const { error: errorConfig } = await saveConfig(config)
+    if (errorConfig) {
+      console.error('Error guardando config:', errorConfig)
+      alert('Error al guardar config: ' + (errorConfig.message || JSON.stringify(errorConfig)))
+      return
+    }
+    const { error: errorProductos } = await saveProductos(productos)
+    if (errorProductos) {
+      console.error('Error guardando productos:', errorProductos)
+      alert('Error al guardar productos: ' + (errorProductos.message || JSON.stringify(errorProductos)))
+      return
+    }
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
