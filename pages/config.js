@@ -60,10 +60,6 @@ export default function Config() {
     loadData()
   }, [])
 
-  useEffect(() => {
-    saveConfig(config)
-  }, [config])
-
   const horasImpresionMes = config.horasDia * config.diasMes
   const costoDesgaste = config.precioImpresora / config.vidaUtilHoras
   const alquilerNegocio = config.alquiler * config.proporcionNegocio
