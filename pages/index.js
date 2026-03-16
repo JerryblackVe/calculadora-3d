@@ -243,11 +243,13 @@ export default function Home() {
           <p style={{...styles.subtitle, ...theme.subtitle}}>Impresión 3D - Fantastic Plastik</p>
         </div>
         <div style={styles.headerRight}>
-          <Link href="/config" style={{...styles.configLink, ...theme.configLink}}>⚙️ Configuración</Link>
-          <button onClick={guardarCambios} style={{...styles.saveButton, ...theme.saveButton}}>
-            {saved ? '✅ Guardado' : '💾 Guardar'}
+          <Link href="/config" style={{...styles.configLink, ...theme.configLink}} aria-label="Ir a configuración">
+            <span aria-hidden="true">⚙️</span> Configuración
+          </Link>
+          <button onClick={guardarCambios} style={{...styles.saveButton, ...theme.saveButton}} aria-label="Guardar cambios">
+            {saved ? '✓ Guardado' : '💾 Guardar'}
           </button>
-          <button onClick={() => setDarkMode(!darkMode)} style={{...styles.themeToggle, ...theme.themeToggle}}>
+          <button onClick={() => setDarkMode(!darkMode)} style={{...styles.themeToggle, ...theme.themeToggle}} aria-label={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}>
             {darkMode ? '☀️ Claro' : '🌙 Oscuro'}
           </button>
         </div>
@@ -255,7 +257,7 @@ export default function Home() {
 
       <div style={{...styles.dataSection, ...theme.dataSection}}>
         <div style={styles.dataInfo}>
-          <button onClick={actualizarDatos} disabled={loading} style={{...styles.refreshButton, ...theme.refreshButton}}>
+          <button onClick={actualizarDatos} disabled={loading} style={{...styles.refreshButton, ...theme.refreshButton}} aria-label="Actualizar datos económicos">
             {loading ? '⏳ Actualizando...' : '🔄 Actualizar Datos'}
           </button>
           <div style={styles.dataDisplay}>
@@ -288,8 +290,8 @@ export default function Home() {
         <div style={styles.tableHeader}>
           <h2 style={{...styles.sectionTitle, ...theme.sectionTitle}}>📦 Productos ({productos.length})</h2>
           <div style={styles.tableActions}>
-            <button onClick={agregarProducto} style={{...styles.addButton, ...theme.addButton}}>➕ Agregar</button>
-            <button onClick={resetProductos} style={{...styles.resetButton, ...theme.resetButton}}>🗑️ Reset</button>
+            <button onClick={agregarProducto} style={{...styles.addButton, ...theme.addButton}} aria-label="Agregar nuevo producto">➕ Agregar</button>
+            <button onClick={resetProductos} style={{...styles.resetButton, ...theme.resetButton}} aria-label="Restablecer productos">🗑️ Reset</button>
           </div>
         </div>
         <div style={styles.tableWrapper}>
@@ -308,36 +310,43 @@ export default function Home() {
                 <th style={{...styles.th, ...theme.th, width: '40px'}}></th>
               </tr>
             </thead>
-            <tbody>
+              <tbody>
               {productos.map((producto, index) => {
                 const resultado = calcularParaProducto(producto)
                 return (
                   <tr key={producto.id} style={{...styles.row, ...theme.row}}>
                     <td style={{...styles.td, ...theme.td}}>
-                      <input type="text" value={producto.nombre} onChange={e => handleNombreChange(index, e.target.value)} style={{...styles.inputText, ...theme.inputText}} />
+                      <label className="sr-only">Nombre del producto</label>
+                      <input type="text" value={producto.nombre} onChange={e => handleNombreChange(index, e.target.value)} style={{...styles.inputText, ...theme.inputText}} aria-label={`Producto ${index + 1}: ${producto.nombre || 'Sin nombre'}`} />
                     </td>
                     <td style={{...styles.td, ...theme.td}}>
-                      <input type="number" value={producto.materialG} onChange={e => handleInputChange(index, 'materialG', e.target.value)} style={{...styles.inputNumber, ...theme.inputNumber}} />
+                      <label className="sr-only">Material en gramos</label>
+                      <input type="number" value={producto.materialG} onChange={e => handleInputChange(index, 'materialG', e.target.value)} style={{...styles.inputNumber, ...theme.inputNumber}} aria-label="Material (gramos)" />
                     </td>
                     <td style={{...styles.td, ...theme.td}}>
-                      <input type="number" value={producto.horas} onChange={e => handleInputChange(index, 'horas', e.target.value)} style={{...styles.inputNumber, ...theme.inputNumber}} />
+                      <label className="sr-only">Horas de impresión</label>
+                      <input type="number" value={producto.horas} onChange={e => handleInputChange(index, 'horas', e.target.value)} style={{...styles.inputNumber, ...theme.inputNumber}} aria-label="Horas de impresión" />
                     </td>
                     <td style={{...styles.td, ...theme.td}}>
-                      <input type="number" value={producto.minTrabajo} onChange={e => handleInputChange(index, 'minTrabajo', e.target.value)} style={{...styles.inputNumber, ...theme.inputNumber}} />
+                      <label className="sr-only">Minutos de trabajo</label>
+                      <input type="number" value={producto.minTrabajo} onChange={e => handleInputChange(index, 'minTrabajo', e.target.value)} style={{...styles.inputNumber, ...theme.inputNumber}} aria-label="Minutos de trabajo" />
                     </td>
                     <td style={{...styles.td, ...theme.td}}>
-                      <input type="number" value={producto.packaging} onChange={e => handleInputChange(index, 'packaging', e.target.value)} style={{...styles.inputNumber, ...theme.inputNumber}} />
+                      <label className="sr-only">Costo de packaging</label>
+                      <input type="number" value={producto.packaging} onChange={e => handleInputChange(index, 'packaging', e.target.value)} style={{...styles.inputNumber, ...theme.inputNumber}} aria-label="Costo de packaging" />
                     </td>
                     <td style={{...styles.td, ...theme.td}}>
-                      <input type="number" value={Math.round(producto.tasaFallos * 100)} onChange={e => handleInputChange(index, 'tasaFallos', e.target.value / 100)} style={{...styles.inputNumber, ...theme.inputNumber}} />
+                      <label className="sr-only">Tasa de fallos</label>
+                      <input type="number" value={Math.round(producto.tasaFallos * 100)} onChange={e => handleInputChange(index, 'tasaFallos', e.target.value / 100)} style={{...styles.inputNumber, ...theme.inputNumber}} aria-label="Tasa de fallos (%)" />
                     </td>
                     <td style={{...styles.td, ...theme.td}}>
-                      <input type="number" value={Math.round(producto.ganancia * 100)} onChange={e => handleInputChange(index, 'ganancia', e.target.value / 100)} style={{...styles.inputNumber, ...theme.inputNumber}} />
+                      <label className="sr-only">Porcentaje de ganancia</label>
+                      <input type="number" value={Math.round(producto.ganancia * 100)} onChange={e => handleInputChange(index, 'ganancia', e.target.value / 100)} style={{...styles.inputNumber, ...theme.inputNumber}} aria-label="Porcentaje de ganancia" />
                     </td>
-                    <td style={{...styles.td, ...styles.calculated, ...theme.calculated}}>${Math.round(resultado.costoTotal).toLocaleString()}</td>
-                    <td style={{...styles.td, ...styles.finalPrice, ...theme.finalPrice}}>${Math.round(resultado.precioFinal).toLocaleString()}</td>
+                    <td style={{...styles.td, ...styles.calculated, ...theme.calculated}} aria-label={`Costo total: $${Math.round(resultado.costoTotal).toLocaleString()}`}>${Math.round(resultado.costoTotal).toLocaleString()}</td>
+                    <td style={{...styles.td, ...styles.finalPrice, ...theme.finalPrice}} aria-label={`Precio final: $${Math.round(resultado.precioFinal).toLocaleString()}`}>${Math.round(resultado.precioFinal).toLocaleString()}</td>
                     <td style={{...styles.td, ...theme.td}}>
-                      <button onClick={() => eliminarProducto(producto.id)} style={{...styles.deleteButton, ...theme.deleteButton}}>×</button>
+                      <button onClick={() => eliminarProducto(producto.id)} style={{...styles.deleteButton, ...theme.deleteButton}} aria-label={`Eliminar producto ${producto.nombre || index + 1}`}>×</button>
                     </td>
                   </tr>
                 )

@@ -92,12 +92,12 @@ export default function Config() {
     <div style={{...styles.container, ...theme.container}}>
       <header style={{...styles.header, ...theme.header}}>
         <div style={styles.headerTop}>
-          <Link href="/" style={styles.backButton}>← Volver</Link>
+          <Link href="/" style={styles.backButton} aria-label="Volver a la calculadora">← Volver</Link>
           <div style={{display: 'flex', gap: '10px'}}>
-            <button onClick={guardarCambios} style={{...styles.saveButton, ...theme.saveButton}}>
-              {saved ? '✅ Guardado' : '💾 Guardar'}
+            <button onClick={guardarCambios} style={{...styles.saveButton, ...theme.saveButton}} aria-label="Guardar configuración">
+              {saved ? '✓ Guardado' : '💾 Guardar'}
             </button>
-            <button onClick={() => setDarkMode(!darkMode)} style={{...styles.themeToggle, ...theme.themeToggle}}>
+            <button onClick={() => setDarkMode(!darkMode)} style={{...styles.themeToggle, ...theme.themeToggle}} aria-label={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}>
               {darkMode ? '☀️ Claro' : '🌙 Oscuro'}
             </button>
           </div>
@@ -109,7 +109,7 @@ export default function Config() {
       <section style={{...styles.configSection, ...theme.configSection}}>
         <div style={styles.configHeader}>
           <h2 style={{...styles.sectionTitle, ...theme.sectionTitle}}>Parámetros del Negocio</h2>
-          <button onClick={resetConfig} style={{...styles.resetConfigBtn, ...theme.resetConfigBtn}}>🔄 Restablecer</button>
+          <button onClick={resetConfig} style={{...styles.resetConfigBtn, ...theme.resetConfigBtn}} aria-label="Restablecer configuración">🔄 Restablecer</button>
         </div>
         
         <div style={styles.configGrid}>
