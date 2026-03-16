@@ -55,3 +55,51 @@ textarea {
   background-color: #2d8b8b;
   color: white;
 }
+
+/* Hover states para botones */
+button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+button:active {
+  transform: translateY(0);
+  filter: brightness(0.95);
+}
+
+/* Botón guardar - verde */
+button[aria-label="Guardar cambios"]:hover {
+  box-shadow: 0 4px 8px rgba(34, 197, 94, 0.4);
+}
+
+/* Botón actualizar */
+button[aria-label="Actualizar datos económicos"]:hover {
+  box-shadow: 0 4px 8px rgba(45, 139, 139, 0.4);
+}
+
+/* Botón agregar */
+button[aria-label="Agregar nuevo producto"]:hover {
+  box-shadow: 0 4px 8px rgba(45, 139, 139, 0.4);
+}
+
+/* Botón eliminar/reset */
+button[aria-label*="Eliminar"]:hover,
+button[aria-label*="Reset"]:hover,
+button[aria-label*="Restablecer"]:hover {
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
+}
+
+/* Botón modo oscuro */
+button[aria-label*="modo"]:hover {
+  background-color: #f0fdfa !important;
+}
+
+/* Inputs mejorados */
+input:hover {
+  border-color: #2d8b8b !important;
+}
+
+input:focus {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
